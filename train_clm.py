@@ -281,8 +281,16 @@ def main():
 
 
                     if dp_enabled:
-                        # Add noise to gradients
-                        synced_grads = dp_utils.add_noise_to_grads(synced_grads, args.clip_norm, args.noise_multiplier)
+                        if accelerator.is_main_process:
+                            noises = []
+                            for g in synced_grads:
+                                noises.append(torch.normal(0, args.clip_norm * args.noise_multiplier, size=g.shape, device=g.device, dtype=g.dtype))
+                        else:
+                            noises = [torch.zeros_like(g) for g in synced_grads]
+                        # synchronize noise
+                        noises = accelerator.reduce(noises, reduction='sum', scale=1.0)
+                        # add noise to gradients
+                        synced_grads = [g + n for g, n in zip(synced_grads, noises)]
                         
                     # Average over whole batch
                     synced_grads = [g / logical_batch_size for g in synced_grads]
