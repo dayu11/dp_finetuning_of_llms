@@ -34,7 +34,7 @@ def parse_args():
     parser.add_argument("--lr_scheduler_type", type=SchedulerType, default="cosine", help="The scheduler type to use.", choices=["linear", "cosine", "cosine_with_restarts", "polynomial", "constant", "constant_with_warmup"])
     parser.add_argument("--num_warmup_steps", type=int, default=0, help="Number of steps for the warmup in the lr scheduler.")
     parser.add_argument("--output_dir", type=str, default=None, help="Where to store the final model.")
-    parser.add_argument("--seed", type=int, default=None, help="A seed for reproducible training.")
+    parser.add_argument("--seed", type=int, default=42, help="A seed for reproducible training.")
     parser.add_argument("--block_size", type=int, default=None, help="Max sequence length after tokenization. Sequences longer than this will be truncated.")
     parser.add_argument("--eval_freq", type=int, default=100, help="Freq of generation and loss logging.")
     parser.add_argument("--with_tracking", action="store_true", help="Whether to enable experiment trackers for logging.")    
@@ -62,6 +62,12 @@ def main():
     assert args.dataset_name is None or args.train_file is None, 'Only one of dataset_name and train_file should be specified. If you want to use built-in datasets, specify dataset_name. If you want to use customized datasets, specify train_file.'
     assert (args.clip_norm <= 0 and args.noise_multiplier <= 0) or (args.clip_norm > 0 and args.noise_multiplier > 0), 'Currently only support clip_norm and noise_multiplier both >0 or <= 0'
 
+
+    # If passed along, set the training seed now.
+    if args.seed is not None:
+        from accelerate.utils import set_seed
+        set_seed(args.seed)
+    
     # Login to huggingface to get access to llama2
     access_token = args.access_token
     if access_token is not None:
@@ -146,11 +152,6 @@ def main():
     else:
         datasets.utils.logging.set_verbosity_error()
         transformers.utils.logging.set_verbosity_error()
-
-    # If passed along, set the training seed now.
-    if args.seed is not None:
-        from accelerate.utils import set_seed
-        set_seed(args.seed)
 
     # Handle the repository creation
     if accelerator.is_main_process and args.output_dir is not None:
