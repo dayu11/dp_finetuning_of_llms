@@ -289,7 +289,7 @@ def main():
                         else:
                             noises = [torch.zeros_like(g) for g in synced_grads]
                         # synchronize noise
-                        noises = accelerator.reduce(noises, reduction='sum', scale=1.0)
+                        noises = accelerator.reduce(noises, reduction='sum')
                         # add noise to gradients
                         synced_grads = [g + n for g, n in zip(synced_grads, noises)]
                         
