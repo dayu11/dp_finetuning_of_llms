@@ -93,7 +93,7 @@ def get_epsilon_prv(noise_multiplier, delta, steps, sampling_prob):
         delta_error=delta/10
     )    
     eps_low, eps_est, eps_up = accountant.compute_epsilon(delta=delta, num_self_compositions=[steps]) 
-    return eps_low  
+    return eps_up
 
 
 def clip_and_accumulate_perexample_grads(require_grad_params, accumulated_steps, clip_norm, accelerator):
