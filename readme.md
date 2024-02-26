@@ -103,5 +103,12 @@ If you find this repo useful, please consider citing
   year = {2022},
   booktitle = {International Conference on Learning Representations (ICLR)}
 }
+
+@inproceedings{yu2023training,
+  title={Training Private and Efficient Language Models with Synthetic Data from LLMs},
+  author={Yu, Da and Backurs, Arturs and Gopi, Sivakanth and Inan, Huseyin and Kulkarni, Janardhan and Lin, Zinan and Xie, Chulin and Zhang, Huishuai and Zhang, Wanrong},
+  booktitle={Socially Responsible Language Modelling Research},
+  year={2023}
+}
 ```
 
